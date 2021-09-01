@@ -6,10 +6,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ContactInfo.h"
+@class ContactInfo;
 
 @interface AddContactViewController : UIViewController
 
-- (instancetype _Nonnull )initWithContact:(nullable ContactInfo *)contact;
+- (instancetype _Nonnull)initWithContact:(nullable ContactInfo *)contact;
 
 @end

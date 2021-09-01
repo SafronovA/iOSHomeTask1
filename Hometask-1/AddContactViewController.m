@@ -25,14 +25,14 @@
 @interface AddContactViewController (KeyboardHandling)
 
 - (void)subscribeOnKeyboardEvents;
-- (void)updateTopContraintWith:(CGFloat) constant andVerticalMargin:(CGFloat) margin;
+- (void)updateTopContraintWith:(CGFloat)constant andVerticalMargin:(CGFloat)margin;
 - (void)hideWhenTappedAround;
 @end
 
 // MARK: - AddContactViewController
 @implementation AddContactViewController
 
--(instancetype) initWithContact:(nullable ContactInfo *)contact{
+- (instancetype)initWithContact:(nullable ContactInfo *)contact{
     self = [self init];
     if (self) {
         _contact = contact;
@@ -44,18 +44,15 @@
     [super viewDidLoad];
     self.view.backgroundColor = UIColor.whiteColor;
     
-    // Subscrube on keyboard events
-    [self subscribeOnKeyboardEvents];
-    [self hideWhenTappedAround];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
     [self setupNavigationBar];
     [self setupFirstNameField];
     [self setupLastNameField];
     [self setupAddButton];
     [self fillInContactData];
+    
+    // Subscrube on keyboard events
+    [self subscribeOnKeyboardEvents];
+    [self hideWhenTappedAround];
 }
 
 - (void)setupNavigationBar {
@@ -73,16 +70,16 @@
     self.firstName.placeholder = @"First name";
     self.firstName.leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, 20)];
     self.firstName.leftViewMode = UITextFieldViewModeAlways;
-    [self.view addSubview:_firstName];
+    [self.view addSubview:self.firstName];
     self.firstName.translatesAutoresizingMaskIntoConstraints = false;
     self.firstName.layer.cornerRadius = 5;
     self.firstName.layer.borderWidth = 1.5;
-    self.firstNameTopAnchor = [self.firstName.topAnchor constraintEqualToAnchor:self.view.topAnchor constant: 150];
+    self.firstNameTopAnchor = [self.firstName.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:150];
     [NSLayoutConstraint activateConstraints:@[
         [self firstNameTopAnchor],
-        [self.firstName.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant: 50],
-        [self.firstName.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant: -50],
-        [self.firstName.heightAnchor constraintEqualToConstant: 40]
+        [self.firstName.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant:50],
+        [self.firstName.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant:-50],
+        [self.firstName.heightAnchor constraintEqualToConstant:40]
     ]];
     
 }
@@ -94,16 +91,16 @@
     self.lastName.placeholder = @"Last name";
     self.lastName.leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, 20)];
     self.lastName.leftViewMode = UITextFieldViewModeAlways;
-    [self.view addSubview:_lastName];
+    [self.view addSubview:self.lastName];
     self.lastName.translatesAutoresizingMaskIntoConstraints = false;
     self.lastName.layer.cornerRadius = 5;
     self.lastName.layer.borderWidth = 1.5;
-    self.lastNameTopAnchor = [self.lastName.topAnchor constraintEqualToAnchor:self.firstName.bottomAnchor constant: 30];
+    self.lastNameTopAnchor = [self.lastName.topAnchor constraintEqualToAnchor:self.firstName.bottomAnchor constant:30];
     [NSLayoutConstraint activateConstraints:@[
         [self lastNameTopAnchor],
-        [self.lastName.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant: 50],
-        [self.lastName.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant: -50],
-        [self.lastName.heightAnchor constraintEqualToConstant: 40]
+        [self.lastName.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant:50],
+        [self.lastName.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant:-50],
+        [self.lastName.heightAnchor constraintEqualToConstant:40]
     ]];
 }
 
@@ -113,24 +110,24 @@
                  action:@selector(addContact)
        forControlEvents:UIControlEventTouchDown];
     [self.add setTitle:@"Add" forState:UIControlStateNormal];
-    self.add.titleLabel.font = [UIFont systemFontOfSize: 20 weight: UIFontWeightMedium];
-    [self.view addSubview:_add];
+    self.add.titleLabel.font = [UIFont systemFontOfSize:20 weight: UIFontWeightMedium];
+    [self.view addSubview:self.add];
     self.add.translatesAutoresizingMaskIntoConstraints = false;
     self.add.layer.cornerRadius = 20;
     self.add.layer.borderWidth = 2;
-    self.addTopAnchor = [self.add.topAnchor constraintEqualToAnchor:self.lastName.bottomAnchor constant: 30];
+    self.addTopAnchor = [self.add.topAnchor constraintEqualToAnchor:self.lastName.bottomAnchor constant:30];
     [NSLayoutConstraint activateConstraints:@[
         [self addTopAnchor],
         [self.add.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
-        [self.add.heightAnchor constraintEqualToConstant: 50],
+        [self.add.heightAnchor constraintEqualToConstant:50],
         [self.add.widthAnchor constraintEqualToConstant:200]
     ]];
 }
 
--(void)fillInContactData{
-    if (_contact) {
-        _firstName.text = _contact.firstName;
-        _lastName.text = _contact.lastName;
+- (void)fillInContactData{
+    if (self.contact) {
+        self.firstName.text = self.contact.firstName;
+        self.lastName.text = self.contact.lastName;
     }
 }
 - (void)goBack {
@@ -181,7 +178,7 @@
     }
 }
 
-- (void)updateTopContraintWith:(CGFloat) constant andVerticalMargin:(CGFloat) margin{
+- (void)updateTopContraintWith:(CGFloat)constant andVerticalMargin:(CGFloat)margin{
     self.firstNameTopAnchor.constant = constant;
     self.lastNameTopAnchor.constant = margin;
     self.addTopAnchor.constant = margin;
@@ -190,7 +187,7 @@
     }];
 }
 
--(BOOL) isLandscape{
+- (BOOL)isLandscape{
     return UIDeviceOrientationIsLandscape(UIDevice.currentDevice.orientation);
 }
 
