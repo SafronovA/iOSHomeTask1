@@ -71,7 +71,7 @@
     self.firstName.leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, 20)];
     self.firstName.leftViewMode = UITextFieldViewModeAlways;
     [self.view addSubview:self.firstName];
-    self.firstName.translatesAutoresizingMaskIntoConstraints = false;
+    self.firstName.translatesAutoresizingMaskIntoConstraints = NO;
     self.firstName.layer.cornerRadius = 5;
     self.firstName.layer.borderWidth = 1.5;
     self.firstNameTopAnchor = [self.firstName.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:150];
@@ -92,7 +92,7 @@
     self.lastName.leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, 20)];
     self.lastName.leftViewMode = UITextFieldViewModeAlways;
     [self.view addSubview:self.lastName];
-    self.lastName.translatesAutoresizingMaskIntoConstraints = false;
+    self.lastName.translatesAutoresizingMaskIntoConstraints = NO;
     self.lastName.layer.cornerRadius = 5;
     self.lastName.layer.borderWidth = 1.5;
     self.lastNameTopAnchor = [self.lastName.topAnchor constraintEqualToAnchor:self.firstName.bottomAnchor constant:30];
@@ -110,9 +110,9 @@
                  action:@selector(addContact)
        forControlEvents:UIControlEventTouchDown];
     [self.add setTitle:@"Add" forState:UIControlStateNormal];
-    self.add.titleLabel.font = [UIFont systemFontOfSize:20 weight: UIFontWeightMedium];
+    self.add.titleLabel.font = [UIFont systemFontOfSize:20 weight:UIFontWeightMedium];
     [self.view addSubview:self.add];
-    self.add.translatesAutoresizingMaskIntoConstraints = false;
+    self.add.translatesAutoresizingMaskIntoConstraints = NO;
     self.add.layer.cornerRadius = 20;
     self.add.layer.borderWidth = 2;
     self.addTopAnchor = [self.add.topAnchor constraintEqualToAnchor:self.lastName.bottomAnchor constant:30];
@@ -135,7 +135,7 @@
 }
 
 - (void)hide {
-    [self.view endEditing:true];
+    [self.view endEditing:YES];
 }
 
 - (void)addContact {
@@ -168,7 +168,7 @@
 
 - (void)keybaordWillShow:(NSNotification *)notification {
     if ([self isLandscape]) {
-        [self updateTopContraintWith:70.0 andVerticalMargin:10.0];
+        [self updateTopContraintWith:50.0 andVerticalMargin:10.0];
     }
 }
 

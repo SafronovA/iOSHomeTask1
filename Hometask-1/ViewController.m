@@ -27,7 +27,7 @@
 
 #pragma mark - Setup Views
 
--(void) setupNavigationBar{
+- (void) setupNavigationBar {
     self.navigationItem.title = @"Contact Info";
     UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                                                         target:self
@@ -35,7 +35,7 @@
     self.navigationItem.rightBarButtonItem = rightBarButtonItem;
 }
 
--(void) setupTableView{
+- (void) setupTableView {
     self.tableView = [UITableView new];
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     self.tableView.dataSource = self;
@@ -65,7 +65,7 @@
 
 #pragma mark - UITableViewDelegate
 
--(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     ContactInfo *contact = self.dataSource[indexPath.row];
     [self navigateToAddContactVC:contact];
@@ -74,10 +74,10 @@
 #pragma mark - Handlers
 
 - (void)addContact {
-    [self navigateToAddContactVC: nil];
+    [self navigateToAddContactVC:nil];
 }
 
--(void) navigateToAddContactVC:(nullable ContactInfo *) contactInfo{
+- (void) navigateToAddContactVC:(nullable ContactInfo *) contactInfo {
     AddContactViewController *addContactViewController = [[AddContactViewController alloc] initWithContact:contactInfo];
     [self.navigationController pushViewController:addContactViewController animated:YES];
 }

@@ -9,7 +9,7 @@
 
 @implementation ContactInfo
 
--(instancetype) initWithFirstName:(NSString *)firstName andLastName:(NSString *)lastName{
+- (instancetype)initWithFirstName:(NSString *)firstName andLastName:(NSString *)lastName {
     self = [self init];
     if (self) {
         _firstName = firstName;
