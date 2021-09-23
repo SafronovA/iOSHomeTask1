@@ -12,12 +12,10 @@
 @interface AddContactViewController ()
 
 @property (strong, nonatomic, nullable) ContactInfo *contact;
+@property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) UITextField *firstName;
 @property (strong, nonatomic) UITextField *lastName;
 @property (strong, nonatomic) UIButton *add;
-@property (weak, nonatomic) NSLayoutConstraint *firstNameTopAnchor;
-@property (weak, nonatomic) NSLayoutConstraint *lastNameTopAnchor;
-@property (weak, nonatomic) NSLayoutConstraint *addTopAnchor;
 
 @end
 
@@ -25,8 +23,8 @@
 @interface AddContactViewController (KeyboardHandling)
 
 - (void)subscribeOnKeyboardEvents;
-- (void)updateTopContraintWith:(CGFloat)constant andVerticalMargin:(CGFloat)margin;
 - (void)hideWhenTappedAround;
+
 @end
 
 // MARK: - AddContactViewController
@@ -44,6 +42,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = UIColor.whiteColor;
     
+    [self setupScrollView];
     [self setupNavigationBar];
     [self setupFirstNameField];
     [self setupLastNameField];
@@ -53,7 +52,7 @@
     // Subscrube on keyboard events
     [self subscribeOnKeyboardEvents];
     [self hideWhenTappedAround];
-}
+    }
 
 - (void)setupNavigationBar {
     self.navigationItem.title = @"Title";
@@ -63,6 +62,12 @@
                                                                             action:@selector(goBack)];
 }
 
+- (void)setupScrollView {
+    self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    [self.scrollView setContentSize:CGSizeMake(self.view.frame.size.width, self.view.frame.size.height)];
+    [self.view addSubview:self.scrollView];
+}
+
 - (void)setupFirstNameField {
     self.firstName = [UITextField new];
     self.firstName.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -70,18 +75,16 @@
     self.firstName.placeholder = @"First name";
     self.firstName.leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, 20)];
     self.firstName.leftViewMode = UITextFieldViewModeAlways;
-    [self.view addSubview:self.firstName];
+    [self.scrollView addSubview:self.firstName];
     self.firstName.translatesAutoresizingMaskIntoConstraints = NO;
     self.firstName.layer.cornerRadius = 5;
     self.firstName.layer.borderWidth = 1.5;
-    self.firstNameTopAnchor = [self.firstName.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:150];
     [NSLayoutConstraint activateConstraints:@[
-        [self firstNameTopAnchor],
+        [self.firstName.topAnchor constraintEqualToAnchor:self.scrollView.topAnchor constant:100],
         [self.firstName.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant:50],
         [self.firstName.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant:-50],
         [self.firstName.heightAnchor constraintEqualToConstant:40]
     ]];
-    
 }
 
 - (void)setupLastNameField {
@@ -91,13 +94,12 @@
     self.lastName.placeholder = @"Last name";
     self.lastName.leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, 20)];
     self.lastName.leftViewMode = UITextFieldViewModeAlways;
-    [self.view addSubview:self.lastName];
+    [self.scrollView addSubview:self.lastName];
     self.lastName.translatesAutoresizingMaskIntoConstraints = NO;
     self.lastName.layer.cornerRadius = 5;
     self.lastName.layer.borderWidth = 1.5;
-    self.lastNameTopAnchor = [self.lastName.topAnchor constraintEqualToAnchor:self.firstName.bottomAnchor constant:30];
     [NSLayoutConstraint activateConstraints:@[
-        [self lastNameTopAnchor],
+        [self.lastName.topAnchor constraintEqualToAnchor:self.firstName.bottomAnchor constant:30],
         [self.lastName.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant:50],
         [self.lastName.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant:-50],
         [self.lastName.heightAnchor constraintEqualToConstant:40]
@@ -111,13 +113,12 @@
        forControlEvents:UIControlEventTouchDown];
     [self.add setTitle:@"Add" forState:UIControlStateNormal];
     self.add.titleLabel.font = [UIFont systemFontOfSize:20 weight:UIFontWeightMedium];
-    [self.view addSubview:self.add];
+    [self.scrollView addSubview:self.add];
     self.add.translatesAutoresizingMaskIntoConstraints = NO;
     self.add.layer.cornerRadius = 20;
     self.add.layer.borderWidth = 2;
-    self.addTopAnchor = [self.add.topAnchor constraintEqualToAnchor:self.lastName.bottomAnchor constant:30];
     [NSLayoutConstraint activateConstraints:@[
-        [self addTopAnchor],
+        [self.add.topAnchor constraintEqualToAnchor:self.lastName.bottomAnchor constant:30],
         [self.add.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
         [self.add.heightAnchor constraintEqualToConstant:50],
         [self.add.widthAnchor constraintEqualToConstant:200]
@@ -135,7 +136,7 @@
 }
 
 - (void)hide {
-    [self.view endEditing:YES];
+    [self.scrollView endEditing:YES];
 }
 
 - (void)addContact {
@@ -150,12 +151,12 @@
 - (void)subscribeOnKeyboardEvents {
     // Keyboard will show
     [NSNotificationCenter.defaultCenter addObserver:self
-                                           selector:@selector(keybaordWillShow:)
+                                           selector:@selector(keyboardWillShow:)
                                                name:UIKeyboardWillShowNotification
                                              object:nil];
     // Keyboard will hide
     [NSNotificationCenter.defaultCenter addObserver:self
-                                           selector:@selector(keybaordWillHide:)
+                                           selector:@selector(keyboardWillHide:)
                                                name:UIKeyboardWillHideNotification
                                              object:nil];
 }
@@ -163,32 +164,16 @@
 - (void)hideWhenTappedAround {
     UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                               action:@selector(hide)];
-    [self.view addGestureRecognizer:gesture];
+    [self.scrollView addGestureRecognizer:gesture];
 }
 
-- (void)keybaordWillShow:(NSNotification *)notification {
-    if ([self isLandscape]) {
-        [self updateTopContraintWith:50.0 andVerticalMargin:10.0];
-    }
+- (void)keyboardWillShow:(NSNotification *)notification {
+    CGRect keyboardRect = [(NSValue *)notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    [self.scrollView setContentInset:UIEdgeInsetsMake(0, 0, keyboardRect.size.height - self.view.safeAreaInsets.bottom + 10, 0)];
 }
 
-- (void)keybaordWillHide:(NSNotification *)notification {
-    if ([self isLandscape]) {
-        [self updateTopContraintWith:150.0 andVerticalMargin:30.0];
-    }
-}
-
-- (void)updateTopContraintWith:(CGFloat)constant andVerticalMargin:(CGFloat)margin{
-    self.firstNameTopAnchor.constant = constant;
-    self.lastNameTopAnchor.constant = margin;
-    self.addTopAnchor.constant = margin;
-    [UIView animateWithDuration:0.2 animations:^{
-        [self.view layoutIfNeeded];
-    }];
-}
-
-- (BOOL)isLandscape{
-    return UIDeviceOrientationIsLandscape(UIDevice.currentDevice.orientation);
+- (void)keyboardWillHide:(NSNotification *)notification {
+    [self.scrollView setContentInset:UIEdgeInsetsZero];
 }
 
 @end
