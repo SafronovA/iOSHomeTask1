@@ -52,7 +52,7 @@
     // Subscrube on keyboard events
     [self subscribeOnKeyboardEvents];
     [self hideWhenTappedAround];
-    }
+}
 
 - (void)setupNavigationBar {
     self.navigationItem.title = @"Title";
@@ -63,9 +63,15 @@
 }
 
 - (void)setupScrollView {
-    self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    [self.scrollView setContentSize:CGSizeMake(self.view.frame.size.width, self.view.frame.size.height)];
+    self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
     [self.view addSubview:self.scrollView];
+    self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint activateConstraints:@[
+        [self.scrollView.topAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.topAnchor],
+        [self.scrollView.bottomAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.bottomAnchor],
+        [self.scrollView.leadingAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.leadingAnchor],
+        [self.scrollView.trailingAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.trailingAnchor]
+    ]];
 }
 
 - (void)setupFirstNameField {
@@ -100,8 +106,8 @@
     self.lastName.layer.borderWidth = 1.5;
     [NSLayoutConstraint activateConstraints:@[
         [self.lastName.topAnchor constraintEqualToAnchor:self.firstName.bottomAnchor constant:30],
-        [self.lastName.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant:50],
-        [self.lastName.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant:-50],
+        [self.lastName.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:50],
+        [self.lastName.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-50],
         [self.lastName.heightAnchor constraintEqualToConstant:40]
     ]];
 }
