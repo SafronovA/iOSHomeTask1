@@ -16,6 +16,7 @@
 @property (strong, nonatomic) UITextField *firstName;
 @property (strong, nonatomic) UITextField *lastName;
 @property (strong, nonatomic) UIButton *add;
+@property (strong, nonatomic) void (^setScrollViewContentSize)(void);
 
 @end
 
@@ -64,8 +65,14 @@
 
 - (void)setupScrollView {
     self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
-    [self.view addSubview:self.scrollView];
+    __weak __typeof(self) weakSelf = self;
+    self.setScrollViewContentSize = ^(void){
+        __strong __typeof(self) strongSelf = weakSelf;
+         [strongSelf.scrollView setContentSize:CGSizeMake(strongSelf.view.frame.size.width, strongSelf.view.frame.size.height)];
+    };
+    self.setScrollViewContentSize();
     self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.scrollView];
     [NSLayoutConstraint activateConstraints:@[
         [self.scrollView.topAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.topAnchor],
         [self.scrollView.bottomAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.bottomAnchor],
@@ -137,6 +144,11 @@
         self.lastName.text = self.contact.lastName;
     }
 }
+
+-(void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection{
+    self.setScrollViewContentSize();
+}
+
 - (void)goBack {
     [self.navigationController popViewControllerAnimated:YES];
 }
