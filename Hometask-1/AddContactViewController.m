@@ -16,7 +16,7 @@
 @property (strong, nonatomic) UITextField *firstName;
 @property (strong, nonatomic) UITextField *lastName;
 @property (strong, nonatomic) UIButton *add;
-@property (strong, nonatomic) void (^setScrollViewContentSize)(void);
+//@property (strong, nonatomic) void (^setScrollViewContentSize)(void);
 
 @end
 
@@ -65,19 +65,22 @@
 
 - (void)setupScrollView {
     self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
-    __weak __typeof(self) weakSelf = self;
-    self.setScrollViewContentSize = ^(void){
-        __strong __typeof(self) strongSelf = weakSelf;
-         [strongSelf.scrollView setContentSize:CGSizeMake(strongSelf.view.frame.size.width, strongSelf.view.frame.size.height)];
-    };
-    self.setScrollViewContentSize();
+    
+    //            __weak __typeof(self) weakSelf = self;
+    //            self.setScrollViewContentSize = ^(void){
+    //                __strong __typeof(self) strongSelf = weakSelf;
+    //                 [strongSelf.scrollView setContentSize:CGSizeMake(strongSelf.view.frame.size.width, strongSelf.view.frame.size.height)];
+    //            };
+    //            self.setScrollViewContentSize();
+    
     self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.scrollView setBackgroundColor:UIColor.yellowColor];
     [self.view addSubview:self.scrollView];
     [NSLayoutConstraint activateConstraints:@[
         [self.scrollView.topAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.topAnchor],
-        [self.scrollView.bottomAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.bottomAnchor],
         [self.scrollView.leadingAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.leadingAnchor],
-        [self.scrollView.trailingAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.trailingAnchor]
+        [self.scrollView.widthAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.widthAnchor],
+        [self.scrollView.heightAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.heightAnchor]
     ]];
 }
 
@@ -94,8 +97,9 @@
     self.firstName.layer.borderWidth = 1.5;
     [NSLayoutConstraint activateConstraints:@[
         [self.firstName.topAnchor constraintEqualToAnchor:self.scrollView.topAnchor constant:100],
-        [self.firstName.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant:50],
-        [self.firstName.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant:-50],
+        [self.firstName.leadingAnchor constraintEqualToAnchor:self.scrollView.leadingAnchor],
+        [self.firstName.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+        [self.firstName.widthAnchor constraintEqualToAnchor:self.view.widthAnchor multiplier:0.8],
         [self.firstName.heightAnchor constraintEqualToConstant:40]
     ]];
 }
@@ -113,9 +117,9 @@
     self.lastName.layer.borderWidth = 1.5;
     [NSLayoutConstraint activateConstraints:@[
         [self.lastName.topAnchor constraintEqualToAnchor:self.firstName.bottomAnchor constant:30],
-        [self.lastName.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:50],
-        [self.lastName.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-50],
-        [self.lastName.heightAnchor constraintEqualToConstant:40]
+        [self.lastName.widthAnchor constraintEqualToAnchor:self.firstName.widthAnchor],
+        [self.lastName.heightAnchor constraintEqualToAnchor:self.firstName.heightAnchor],
+        [self.lastName.centerXAnchor constraintEqualToAnchor:self.firstName.centerXAnchor]
     ]];
 }
 
@@ -132,9 +136,10 @@
     self.add.layer.borderWidth = 2;
     [NSLayoutConstraint activateConstraints:@[
         [self.add.topAnchor constraintEqualToAnchor:self.lastName.bottomAnchor constant:30],
-        [self.add.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+        [self.add.centerXAnchor constraintEqualToAnchor:self.lastName.centerXAnchor],
         [self.add.heightAnchor constraintEqualToConstant:50],
-        [self.add.widthAnchor constraintEqualToConstant:200]
+        [self.add.widthAnchor constraintEqualToConstant:200],
+        [self.add.bottomAnchor constraintLessThanOrEqualToAnchor:self.scrollView.contentLayoutGuide.bottomAnchor]
     ]];
 }
 
@@ -145,9 +150,9 @@
     }
 }
 
--(void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection{
-    self.setScrollViewContentSize();
-}
+//-(void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection{
+//        self.setScrollViewContentSize();
+//}
 
 - (void)goBack {
     [self.navigationController popViewControllerAnimated:YES];
@@ -186,12 +191,16 @@
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {
-    CGRect keyboardRect = [(NSValue *)notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    [self.scrollView setContentInset:UIEdgeInsetsMake(0, 0, keyboardRect.size.height - self.view.safeAreaInsets.bottom + 10, 0)];
+    int keyboardHeight = [(NSValue *)notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
+    [self.scrollView setContentInset:UIEdgeInsetsMake(0, 0, keyboardHeight - self.view.safeAreaInsets.bottom + 10, 0)];
+    
+    CGRect firstResponderRect = self.firstName.isFirstResponder? self.firstName.frame: self.lastName.frame;
+    [self.scrollView setContentOffset:CGPointMake(0, (self.scrollView.safeAreaLayoutGuide.layoutFrame.origin.y + firstResponderRect.origin.y - (self.scrollView.frame.size.height - keyboardHeight) + firstResponderRect.size.height + 10)) animated:YES];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
     [self.scrollView setContentInset:UIEdgeInsetsZero];
+    [self.scrollView setContentOffset:CGPointMake(0, 0) animated:YES];
 }
 
 @end
